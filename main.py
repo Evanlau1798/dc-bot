@@ -2,6 +2,7 @@ import os
 import discord                                #導入 Discord.py
 import keep_alive
 import picture
+import help
 #import time
 from datetime import datetime,timezone,timedelta
 
@@ -38,10 +39,7 @@ async def on_message(message):                #當有訊息時
             tmp = message.content.split(" ",3)
 
             if 'help' in tmp:   #指令幫助
-              path = 'readme.txt'
-              f = open(path, 'r')
-              await message.channel.send(f.read())
-              f.close()
+              await message.channel.send(help())
 
             if 'status' in tmp:
               game = discord.Game(tmp[2])
@@ -61,7 +59,6 @@ async def on_message(message):                #當有訊息時
                 await message.channel.send(picture.pic1)
                 await message.channel.send(picture.pic2)
                 await message.channel.send(picture.pic3)
-              
     
     if message.content == '嗨':
         await message.channel.send(f'早安啊,{name}君❤️')
@@ -82,6 +79,8 @@ async def on_message(message):                #當有訊息時
       if '好耶' in message.content:
         return
       if '「好」' in message.content:
+        return 
+      if '還好' in message.content:
         return
       if '你好' in message.content:
         if message.content == '你好':
@@ -97,3 +96,6 @@ async def on_message(message):                #當有訊息時
         
 keep_alive.keep_alive()
 client.run(token)
+
+def help():
+  const embed = new Discord.MessageEmbed()
