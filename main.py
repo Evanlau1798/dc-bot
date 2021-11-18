@@ -47,7 +47,7 @@ async def on_message(message):                #當有訊息時
               game = discord.Game(tmp[2])
               #discord.Status.<狀態>，可以是online,offline,idle,dnd,invisible
               await client.change_presence(status=discord.Status.online, activity=game)
-              await message.channel.send(f'已設定我的狀態為:{tmp[2]}')
+              await message.channel.send(f'已設定我的狀態為{tmp[2]}囉!')
               return
             
             if 'random' in tmp:
@@ -64,10 +64,10 @@ async def on_message(message):                #當有訊息時
               
     
     if message.content == '嗨':
-        await message.channel.send(f'早安,{name}')
+        await message.channel.send(f'早安啊,{name}君❤️')
 
     if message.content == '早安':
-        await message.channel.send(f'早安,{name}')
+        await message.channel.send(f'早安啊,{name}君❤️')
 
     if message.content == '🤔':
         await message.channel.send('🤥')
@@ -85,14 +85,14 @@ async def on_message(message):                #當有訊息時
         return
       if '你好' in message.content:
         if message.content == '你好':
-          await message.channel.send(f'你好啊,{name}')
+          await message.channel.send(f'你好啊,{name}君❤️')
           return
       
-      await message.channel.send('知道就好')
+      await message.channel.send('知道就好☺️')
         
 
     if 'rick' in message.content:
-        await message.channel.send('有人提到rick嗎😀?')
+        await message.channel.send('有人提到rickroll嗎😀?')
         await message.channel.send('<a:yellow_guy:910197305540481056>')
         
 keep_alive.keep_alive()
