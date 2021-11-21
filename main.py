@@ -56,7 +56,7 @@ async def on_message(message):                #當有訊息時
         f.close()
         return
 
-      if 'status' in tmp[1]:
+      if '狀態' in tmp[1]:
         game = discord.Game(tmp[2])
         #discord.Status.<狀態>，可以是online,offline,idle,dnd,invisible
         await client.change_presence(status=discord.Status.online, activity=game)
@@ -114,14 +114,6 @@ async def on_message(message):                #當有訊息時
 
   if message.content == '早安':
     await message.channel.send(f'早安啊,{name}君❤️')
-    return
-
-  if message.content == '🤔':
-    await message.channel.send('🤥')
-    return
-
-  if '🤥' in message.content:
-    await message.channel.send('🤥🤥🤥')
     return
 
   if '🎤' in message.content:
