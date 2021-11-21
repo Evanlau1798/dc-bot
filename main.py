@@ -34,7 +34,6 @@ async def on_message(message):                #當有訊息時
   print('於',ticks,f'偵測到訊息:{message.content}')
 
   if message.content.startswith('#'):       #指令判斷
-    #print('偵測到指令')
     tmp = message.content.split("#",2)    #切兩刀訊息
     if len(tmp) == 1:   #如果分割後串列長度只有1
       await message.channel.send("我不知道您在說什麼誒...\n可以請您再說一次嗎?")
@@ -48,12 +47,23 @@ async def on_message(message):                #當有訊息時
         await message.channel.send('https://i.imgur.com/V1P5kV2.jpg')
         return
         
-#      if ['help','status','update','picture','random'] in tmp[1]:
       if 'help' in tmp[1]:   #指令幫助
-        path = 'readme.md'
-        f = open(path, 'r')
-        await message.channel.send(f.read())
-        f.close()
+        embed=discord.Embed(title="機器人指令使用說明", description="讓您了解如何活用我的力量!", color=0xd98d91)
+        embed.set_author(name="姬宮真步#4176",icon_url="https://cdn.discordapp.com/app-icons/909796683418832956/13e44ec11c3a69d1bd042e3c41e5e320.png?size=128")
+        embed.set_image(url="https://i.imgur.com/4P71nBG.jpg")
+        embed.add_field(name="** **", value="** **", inline=False)
+        embed.add_field(name="# help", value="開啟幫助列表", inline=True)
+        embed.add_field(name="# random", value="直接打出指令，可以召喚香圖🤩\n(圖庫由 優衣 linebot 機器人提供)", inline=True)
+        embed.add_field(name="# picture", value="用法: # picture [狀態]\n可以召喚指定角色的香圖\n(圖庫依然由 優衣 linebot 機器人提供)", inline=True)
+        embed.add_field(name="** **", value="** **", inline=False)
+        embed.add_field(name="額外指令", value="** **", inline=False)
+        embed.add_field(name="文字中只要包含rick", value="就可以呼叫👞🎙️🎵", inline=True)
+        embed.add_field(name="說[嗨][早安]", value="讓我跟你說早安", inline=True)
+        embed.add_field(name="說[你好]", value="讓我跟你說好", inline=True)
+        embed.add_field(name="好", value="好佳在你知道", inline=False)
+        embed.add_field(name="** **", value="就醬", inline=True)
+        embed.set_footer(text="姬宮真步#4176  discord bot  V1.1.1 beta測試版")
+        await message.channel.send(embed=embed)
         return
 
       if '狀態' in tmp[1]:
@@ -68,21 +78,15 @@ async def on_message(message):                #當有訊息時
         await message.channel.send(update)
         return
 
-#      print(tmp[1])
 
       if 'random' in tmp[1] or 'picture' in tmp[1]:
-#        print(tmp)
         tmp = message.content.split(" ",3)
         try:
-#          print(f'{tmp[1]}')
           picture.locate = 1
           if 'random' == tmp[1]:
-#            print('圖片random')
             picture.pic_random(tmp[1])
           if 'picture' == tmp[1]:
-#            print('圖片picture')
             picture.pic_random(tmp[2])
-#            print(f'locate={picture.locate}')
           if picture.locate == 1:
             if 'http' in picture.pic1:
               await message.channel.send(picture.pic1)
@@ -94,7 +98,6 @@ async def on_message(message):                #當有訊息時
               await message.channel.send(picture.pic2)
               await message.channel.send(picture.pic3)
           if picture.locate == 0:
-            print('找不到圖片')
             await message.channel.send('您指定的這位老婆，我不認識她誒...😰')
             await message.channel.send('https://i.imgur.com/nbs4CXK.jpg')
             return
