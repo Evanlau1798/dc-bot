@@ -48,7 +48,7 @@ async def on_message(message):                #當有訊息時
         
 #      if ['help','status','update','picture','random'] in tmp[1]:
       if 'help' in tmp[1]:   #指令幫助
-        path = 'readme.txt'
+        path = 'readme.md'
         f = open(path, 'r')
         await message.channel.send(f.read())
         f.close()
