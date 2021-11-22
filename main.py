@@ -6,6 +6,7 @@ import replit
 #import readme
 #import time
 from datetime import datetime,timezone,timedelta
+ver = '姬宮真步#4176  discord bot  V1.1.1 beta測試版'
 
 
 token = os.environ['token']
@@ -62,7 +63,7 @@ async def on_message(message):                #當有訊息時
         embed.add_field(name="說[你好]", value="讓我跟你說好", inline=True)
         embed.add_field(name="好", value="好佳在你知道", inline=False)
         embed.add_field(name="** **", value="就醬", inline=True)
-        embed.set_footer(text="姬宮真步#4176  discord bot  V1.1.1 beta測試版")
+        embed.set_footer(text=ver)
         await message.channel.send(embed=embed)
         return
 
@@ -87,16 +88,21 @@ async def on_message(message):                #當有訊息時
             picture.pic_random(tmp[1])
           if 'picture' == tmp[1]:
             picture.pic_random(tmp[2])
+          embed=discord.Embed(color=0xd98d91)
           if picture.locate == 1:
             if 'http' in picture.pic1:
-              await message.channel.send(picture.pic1)
+              embed.set_image(url=picture.pic1)
+              await message.channel.send(embed=embed)
             elif 'http' in picture.pic2:
-              await message.channel.send(picture.pic1)
-              await message.channel.send(picture.pic2)
+              embed.set_author(name=picture.pic1)
+              embed.set_image(url=picture.pic2)
+              await message.channel.send(embed=embed)
             elif 'http' in picture.pic3:
-              await message.channel.send(picture.pic1)
-              await message.channel.send(picture.pic2)
-              await message.channel.send(picture.pic3)
+              embed.set_author(name=picture.pic1)
+              embed.set_image(url=picture.pic2)
+              await message.channel.send(embed=embed)
+              embed.set_image(url=picture.pic3)
+              await message.channel.send(embed=embed)
           if picture.locate == 0:
             await message.channel.send('您指定的這位老婆，我不認識她誒...😰')
             await message.channel.send('https://i.imgur.com/nbs4CXK.jpg')
@@ -136,8 +142,8 @@ async def on_message(message):                #當有訊息時
       if message.content == '你好':
         await message.channel.send(f'你好啊,{name}君❤️')
         return
-      await message.channel.send('知道就好😌')
-      return
+    await message.channel.send('知道就好😌')
+    return
         
   if 'rick' in message.content:
         await message.channel.send('有人提到rickroll嗎😀?')
