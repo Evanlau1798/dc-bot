@@ -37,14 +37,14 @@ async def on_message(message):                #當有訊息時
   if message.content.startswith('#'):       #指令判斷
     tmp = message.content.split("#",2)    #切兩刀訊息
     if len(tmp) == 1:   #如果分割後串列長度只有1
-      await message.channel.send("我不知道您在說什麼誒...\n可以請您再說一次嗎?")
+      await message.reply("我不知道您在說什麼誒...\n可以請您再說一次嗎?")
       await message.channel.send('https://i.imgur.com/V1P5kV2.jpg')
       return
     else:
       tmp = message.content.split(" ",2)
 
       if len(tmp[0]) > 1:
-        await message.channel.send("指令錯誤...\n可以請您再說一次嗎?")
+        await message.reply("指令錯誤...\n可以請您再說一次嗎?")
         await message.channel.send('https://i.imgur.com/V1P5kV2.jpg')
         return
         
@@ -104,25 +104,25 @@ async def on_message(message):                #當有訊息時
               embed.set_image(url=picture.pic3)
               await message.channel.send(embed=embed)
           if picture.locate == 0:
-            await message.channel.send('您指定的這位老婆，我不認識她誒...😰')
+            await message.reply('您指定的這位老婆，我不認識她誒...😰')
             await message.channel.send('https://i.imgur.com/nbs4CXK.jpg')
             return
         except:
-          await message.channel.send("指令錯誤...\n可以請您再說一次嗎?")
+          await message.reply("指令錯誤...\n可以請您再說一次嗎?")
           await message.channel.send('https://i.imgur.com/V1P5kV2.jpg')
           return
 
       else:
-        await message.channel.send("指令錯誤...\n可以請您再說一次嗎?")
+        await message.reply("指令錯誤...\n可以請您再說一次嗎?")
         await message.channel.send('https://i.imgur.com/V1P5kV2.jpg')
         return
 
   if message.content == '嗨':
-    await message.channel.send(f'早安啊,{name}君❤️')
+    await message.reply(f'早安啊,{name}君❤️',mention_author=True)
     return
 
   if message.content == '早安':
-    await message.channel.send(f'早安啊,{name}君❤️')
+    await message.reply(f'早安啊,{name}君❤️',mention_author=True)
     return
 
   if '🎤' in message.content:
@@ -140,9 +140,9 @@ async def on_message(message):                #當有訊息時
       return
     if '你好' in message.content:
       if message.content == '你好':
-        await message.channel.send(f'你好啊,{name}君❤️')
+        await message.reply(f'你好啊,{name}君❤️',mention_author=True)
         return
-    await message.channel.send('知道就好😌')
+    await message.reply('知道就好😌', mention_author=True)
     return
         
   if 'rick' in message.content:
