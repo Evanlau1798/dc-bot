@@ -67,6 +67,7 @@ async def on_message(message):                #當有訊息時
         embed.add_field(name="# picture", value="用法: # picture [狀態]\n可以召喚指定角色的香圖\n(圖庫依然由 優衣 linebot 機器人提供)", inline=True)
         embed.add_field(name="# weather", value="用法: # weather [地區]\n查看指定地區的天氣狀況", inline=True)
         embed.add_field(name="# trans", value="用法: # trans [欲翻譯的句子或單詞]\n將輸入的文字翻譯成繁體中文\n(翻譯由google提供)", inline=True)
+        embed.add_field(name="# pixiv", value="用法: # pixiv [搜尋關鍵字] [指定搜尋序列]\n可以直接搜尋pixiv上的圖片\n(目前暫不開放18+圖片搜尋)\n註:搜尋關鍵字內不可有空格", inline=True)
         embed.add_field(name="** **", value="** **", inline=False)
         embed.add_field(name="額外指令", value="** **", inline=False)
         embed.add_field(name="文字中只要包含rick", value="就可以呼叫👞🎙️🎵", inline=True)
