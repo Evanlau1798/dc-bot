@@ -12,6 +12,8 @@ selenium = "^4.0.0"
 wang-test = "^1.0.0"
 replit = "^3.2.4"
 googletrans = "^3.1.0a0"
+fake-useragent = "^0.1.11"
+pixivpy = "^PixivPy-3.6.2-py3-none-any.whl"
 
 [tool.poetry.dev-dependencies]
 

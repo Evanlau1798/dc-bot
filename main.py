@@ -5,19 +5,22 @@ import picture
 import replit
 import requests
 from googletrans import Translator
-#import readme
-#import time
+import pixivpy3
 from datetime import datetime,timezone,timedelta
+#import time
 ver = '姬宮真步#4176  discord bot  V1.2 beta測試版'
 update = "V1.3 預計更新：\n指定Pixiv中的圖片\n增加日常對話的句子\n優化指令判斷"
 
 
 token = os.environ['discord_token']
-replit.clear()
+_REFRESH_TOKEN = os.environ['pixiv_refresh_token']
 api_key = os.environ['weather_key']
+id = '<@909796683418832956>'
 base_url = "http://api.openweathermap.org/data/2.5/weather?"
 translator = Translator()
-id = '<@909796683418832956>'
+replit.clear()
+headers = {'Referer': 'https://www.pixiv.net/'}
+verify = False
 
 client = discord.Client()                     #client連結Discord
 
@@ -100,14 +103,14 @@ async def on_message(message):                #當有訊息時
       if 'weather' in tmp[1]:
         try:
           tmp = message.content.split("# weather ",2)
-#          print(tmp)
+          #print(tmp)
           city_name = tmp[1]
           complete_url = base_url + "appid=" + api_key + "&q=" + city_name
           response = requests.get(complete_url)
           x = response.json()
           if x["cod"] != "404": 
             async with message.channel.typing():
-#              print(x)
+              #print(x)
               y = x["main"]
               current_temperature = y["temp"]
               current_temperature_celsiuis = str(round(current_temperature - 273.15))
@@ -163,13 +166,48 @@ async def on_message(message):                #當有訊息時
           if picture.locate == 0:
             await message.reply('您指定的這位老婆，我不認識她誒...😰')
             await message.channel.send('https://i.imgur.com/nbs4CXK.jpg')
-            return
+          return
 
         except:
           await message.reply("指令錯誤...\n可以請您再說一次嗎?")
           await message.channel.send('https://i.imgur.com/V1P5kV2.jpg')
           return
 
+      if 'pixiv' in tmp[1]:
+        aapi = pixivpy3.AppPixivAPI()
+        async with message.channel.typing():
+          tmp = message.content.split(" ",4)
+          search = tmp[2]
+
+          try:
+            if int(tmp[3]) > 30:
+              await message.reply('最多只能查詢30張圖片喔')
+              return
+            elif int(tmp[3]) > 1:
+              tmp = int(tmp[3]) - 1
+            elif int(tmp[3]) == 1:
+              tmp = 0
+          except:
+            tmp = 0
+          #print(tmp)
+          
+          try:
+            aapi.auth(refresh_token=_REFRESH_TOKEN)
+            json_result = aapi.search_illust(search,search_target='partial_match_for_tags')
+            illust = json_result.illusts[tmp]
+          except:
+            await message.reply('pixiv上沒有關於這個關鍵字的圖片喔')
+          
+          url = illust.image_urls['large']
+          url = url.split('https://i.pximg.net',2)
+          #url = 'https://i.pixiv.cat' + url[1]
+          url = 'https://pixiv.runrab.workers.dev' + url[1]
+          embed=discord.Embed(color=0xd98d91)
+          embed.set_image(url=url)
+          embed.set_author(name=illust.title)
+          await message.channel.send(embed=embed)
+          return
+      
       else:
         await message.reply("指令錯誤...\n可以請您再說一次嗎?\n輸入 # help 獲得指令說明")
         await message.channel.send('https://i.imgur.com/V1P5kV2.jpg')
