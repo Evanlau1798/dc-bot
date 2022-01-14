@@ -4,7 +4,6 @@ def msgback(value_i,random):
   global pic1
   global pic2
   global pic3
-#  print(f"value_i={value_i[random]}，random={random}")
   if locate == 1 :
     if(len(value_i[random])==1): 
       pic1 = value_i[random][0]
@@ -2284,7 +2283,7 @@ def pic_random(input_message):
 
   elif input_message in ['かなた','天音彼方','天音','彼方','Kanata','Kanata Amane','Amane','天音かなた']:
     value_i = [
-    ['繪師: fuhikanono',                        'https://i.imgur.com/oBEQbpj.jpg'],
+    ['繪師: fuhikanono',                   'https://i.imgur.com/oBEQbpj.jpg'],
     ]     
     locate = 1
     msgback(value_i,random.randint(0,len(value_i)) - 1 )
@@ -2298,7 +2297,7 @@ def pic_random(input_message):
   
   elif input_message in ['星街','星街彗星','星街すいせい','hosimati','suisei']:
     value_i = [
-    ['繪師: Siriusagimugi',                  'https://i.imgur.com/9tqNoLQ.png'],
+    ['繪師: Siriusagimugi',              'https://i.imgur.com/9tqNoLQ.png'],
     ]     
     locate = 1
     msgback(value_i,random.randint(0,len(value_i)) - 1 )
@@ -2312,7 +2311,7 @@ def pic_random(input_message):
 
   elif input_message in ['Patra','周防パトラ','周防']:
     value_i = [
-    ['繪師: パトラ',                        'https://i.imgur.com/Z6An0U2.png'],
+    ['繪師: パトラ',                     'https://i.imgur.com/Z6An0U2.png'],
     ]     
     locate = 1
     msgback(value_i,random.randint(0,len(value_i)) - 1 )
@@ -2328,7 +2327,7 @@ def pic_random(input_message):
   elif input_message in ['貓娘','neko']:
     value_i = [
     ['繪師: るむ',                      'https://i.imgur.com/f3GvldO.jpg'],  
-    ['繪師: 和武はざの',                      'https://i.imgur.com/JZnfSF2.png'],
+    ['繪師: 和武はざの',                 'https://i.imgur.com/JZnfSF2.png'],
     ]
     locate = 1
     msgback(value_i,random.randint(0,len(value_i)) - 1 )

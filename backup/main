@@ -1,0 +1,477 @@
+from discord_slash import SlashCommand
+from discord_slash.utils.manage_commands import create_option
+import os
+import asyncio
+import pixivpy3
+import discord 
+#import keep_alive
+import webserver
+import picture
+import requests
+from googletrans import Translator
+import help
+import conversation
+from datetime import datetime,timezone,timedelta
+update = "預計更新：讓機器人藉由AI與使用者對話"
+
+
+token = os.environ['discord_token']
+_REFRESH_TOKEN = os.environ['pixiv_refresh_token']
+api_key = os.environ['weather_key']
+base_url = "http://api.openweathermap.org/data/2.5/weather?"
+translator = Translator()
+headers = {'Referer': 'https://www.pixiv.net/'}
+verify = False
+bot = discord.Client(intents=discord.Intents.all())
+slash = SlashCommand(bot , sync_commands=True)
+guild_ids = [912688935363305484]
+
+client = discord.Client()                     #client連結Discord
+
+@client.event                                 #調用 event 函式庫
+async def on_ready():  
+  stat='超異域公主連結☆Re:Dive'
+  print(f'目前登入身份：{client.user}')
+  await client.change_presence(status=discord.Status.online, activity=discord.Game(stat))
+print('機器人啟動')
+
+
+@slash.slash(name="ping",description="just test", guild_ids=guild_ids)
+async def _ping(message,*,i):
+  await message.send(f"{i}! ({bot.latency*1000}ms)")
+
+@client.event
+async def on_voice_state_update(member, before, after):
+  await asyncio.sleep(1)
+  name=member.name.split('#',2)
+  try:
+    channelID=after.channel.id
+    DV=open('channelID/DV_ChannelID','r')
+    temp=eval(DV.read())
+    DV.close()
+    print('使用者目前頻道:',after.channel.name)
+    if '的語音頻道' not in str(after.channel.name):
+      for i in temp:
+        if int(i) == int(channelID):
+          print("trigger DVchannel",channelID)
+          channel = client.get_channel(int(i))
+          channelID = await member.guild.create_voice_channel(name=f'{name[0]}的語音頻道',overwrites=None, category=channel.category, reason=None)
+          await member.move_to(channelID)
+          f = open('channelID/V_ChannelID','r')
+          temp=eval(f.read())
+          f.close()
+          temp.append(str(channelID.id))
+          f = open('channelID/V_ChannelID','w')
+          f.write(str(temp))
+          f.close()
+          print(name[0],'創建成功')
+          return
+    else:
+      raise ValueError("ERROR")
+  except:
+    print("trigger cancel channel")
+    path = 'channelID/V_ChannelID'
+    f = open(path,'r')
+    temp=eval(f.read())
+    f.close()
+    for i in temp:
+      if int(i) == int(before.channel.id):
+        channel = client.get_channel(before.channel.id)
+        members = channel.members
+        if len(members) == 0:
+          await channel.delete()
+          temp.remove(str(i))
+          t = open(path, 'w')
+          t.write(str(temp))
+          t.close() 
+          print(f'{channel}刪除成功')
+  return
+
+@client.event                                 #調用 event 函式庫
+async def on_message(message):                #當有訊息時
+  dt1 = datetime.utcnow().replace(tzinfo=timezone.utc)
+  dt2 = dt1.astimezone(timezone(timedelta(hours=8))) # 轉換台灣時區
+  ticks = dt2.strftime("%H:%M:%S")
+    
+  if message.author == client.user:         #排除自己的訊息
+    return
+
+  name = message.author.mention
+  try:
+    conv=str(message.author)+'於'+str(ticks)+'在'+str(message.guild.name)+'的'+str(message.channel)+'說:'+str(message.content)
+  except:
+    conv=str(message.author)+'於'+str(ticks)+'在'+str(message.channel)+'說:'+str(message.content)
+  conversation.write_log(conv)
+
+  if message.content.startswith('#'):       #指令判斷
+    tmp = message.content.split("#",2)    #切兩刀訊息
+    if len(tmp) == 1:   #如果分割後串列長度只有1
+      await message.reply("我不知道您在說什麼誒...\n可以請您再說一次嗎?")
+      await message.channel.send('https://i.imgur.com/V1P5kV2.jpg')
+      return
+    else:
+      tmp = message.content.split(" ",2)
+
+      if len(tmp[0]) > 1:
+        await message.reply("指令錯誤...\n可以請您再說一次嗎?")
+        await message.channel.send('https://i.imgur.com/V1P5kV2.jpg')
+        return
+
+      if 'ping' == tmp[1]:
+        await message.reply(f'延遲:{round(client.latency * 1000)}')
+        return
+        
+      if 'help' == tmp[1]:   #指令幫助
+        embed=discord.Embed(title="機器人指令使用說明", description="讓您了解如何活用我的力量!", color=0xd98d91)
+        file = discord.File("introduction.jpg", filename="introduction.jpg")
+        embed = help.help(embed)
+        await message.channel.send(file=file,embed=embed)
+        return
+
+      if '更改' == tmp[1]:
+        game = discord.Game(tmp[2])
+        await client.change_presence(status=discord.Status.online, activity=game)
+        await message.channel.send(f'已設定我的狀態為{tmp[2]}囉!')
+        return
+
+      if 'update' == tmp[1]:
+        await message.channel.send(update)
+        return
+
+      if 'trans' == tmp[1]:
+        try:
+          tmp = message.content.split("# trans ",2)
+          output = translator.translate(tmp[1], dest='zh-tw').text
+          await message.channel.send(f'翻譯：{output}')
+          return
+        except:
+          await message.reply("指令錯誤...\n可以請您再說一次嗎?\n指令用法為：# trans [欲翻譯的文字或句子]")
+          await message.channel.send('https://i.imgur.com/V1P5kV2.jpg')
+          return
+
+      if 'weather' == tmp[1]:
+        try:
+          tmp = message.content.split("# weather ",2)
+          city_name = tmp[1]
+          complete_url = base_url + "appid=" + api_key + "&q=" + city_name
+          response = requests.get(complete_url)
+          x = response.json()
+          if x["cod"] != "404": 
+            async with message.channel.typing():
+              y = x["main"]
+              current_temperature = y["temp"]
+              current_temperature_celsiuis = str(round(current_temperature - 273.15))
+              current_pressure = y["pressure"]
+              current_humidity = y["humidity"]
+              z = x["weather"]
+              city_name = translator.translate(tmp[1], dest='zh-tw').text
+              embed = discord.Embed(title=f"這是在 {city_name} 的天氣", color=0xd98d91)
+              weather_description = translator.translate(z[0]["description"], dest='zh-tw').text
+              embed.add_field(name="天氣狀況", value=f"**{weather_description}**", inline=False)
+              embed.add_field(name="溫度（°C）", value=f"**{current_temperature_celsiuis}°C**", inline=False)
+              embed.add_field(name="濕度(%)", value=f"**{current_humidity}%**", inline=False)
+              embed.add_field(name="大氣壓力(hPa)", value=f"**{current_pressure}hPa**", inline=False)
+              embed.set_thumbnail(url="https://i.ibb.co/CMrsxdX/weather.png")
+              embed.set_footer(text=f"要求自：{message.author.name}")
+              await message.channel.send(embed=embed) 
+              return
+          else:
+            await message.channel.send("我找不到這個城市喔😨")
+            return
+        except:
+          await message.reply("指令錯誤...\n可以請您再說一次嗎?")
+          await message.channel.send('https://i.imgur.com/V1P5kV2.jpg')
+          return
+
+      if 'random' == tmp[1] or 'picture' == tmp[1]:
+        tmp = message.content.split(" ",3)
+        try:
+          picture.locate = 1
+          if 'random' == tmp[1]:
+            picture.pic_random(tmp[1])
+          if 'picture' == tmp[1]:
+            picture.pic_random(tmp[2])
+          embed=discord.Embed(color=0xd98d91)
+          if picture.locate == 1:
+            if 'http' in picture.pic1:
+              embed.set_image(url=picture.pic1)
+              await message.channel.send(embed=embed)
+            elif 'http' in picture.pic2:
+              embed.set_author(name=picture.pic1)
+              embed.set_image(url=picture.pic2)
+              await message.channel.send(embed=embed)
+            elif 'http' in picture.pic3:
+              embed.set_author(name=picture.pic1)
+              embed.set_image(url=picture.pic2)
+              await message.channel.send(embed=embed)
+              embed.set_image(url=picture.pic3)
+              await message.channel.send(embed=embed)
+          if picture.locate == 0:
+            await message.reply('您指定的這位老婆，我不認識她誒...😰')
+            await message.channel.send('https://i.imgur.com/nbs4CXK.jpg')
+          return
+
+        except:
+          await message.reply("指令錯誤...\n可以請您再說一次嗎?")
+          await message.channel.send('https://i.imgur.com/V1P5kV2.jpg')
+          return
+
+      if 'pixiv' == tmp[1]:
+        aapi = pixivpy3.AppPixivAPI()
+        async with message.channel.typing():
+          tmp = message.content.split(" ",4)
+          search = tmp[2]
+
+          try:
+            if int(tmp[3]) > 30:
+              await message.reply('最多只能查詢30張圖片喔')
+              return
+            elif int(tmp[3]) > 1:
+              tmp = int(tmp[3]) - 1
+            elif int(tmp[3]) == 1:
+              tmp = 0
+          except:
+            tmp = 0
+          
+          try:
+            aapi.auth(refresh_token=_REFRESH_TOKEN)
+            json_result = aapi.search_illust(search,search_target='partial_match_for_tags')
+            illust = json_result.illusts[tmp]
+          except:
+            await message.reply('pixiv上沒有關於這個關鍵字的圖片喔')
+          
+          url = illust.image_urls['large']
+          url = url.split('https://i.pximg.net',2)
+          #url = 'https://i.pixiv.cat' + url[1]
+          url = 'https://pixiv.runrab.workers.dev' + url[1]
+          embed=discord.Embed(color=0xd98d91)
+          embed.set_image(url=url)
+          embed.set_author(name=illust.title)
+          await message.channel.send(embed=embed)
+          return
+      
+      if 'create' == tmp[1]:
+        voice = message.guild.voice_channels
+        tmp = message.content.split(" ",4)
+        c = open('channelID/T_ChannelID', 'r')
+        temp = eval(c.read())
+        if str(message.channel.id) in str(temp):
+          print('相符')
+        else:
+          await message.reply('這個頻道無法使用此指令喔')
+          return
+        c.close()
+        for i in voice[:len(voice)]:
+          if str(i) == str(tmp[2]):
+            await message.channel.send('此頻道已存在')
+            return
+        try:
+          print(tmp[3])
+        except:
+          tmp.append('0')
+        await message.guild.create_voice_channel(name=tmp[2],overwrites=None, category=message.channel.category, reason=None,user_limit=tmp[3])
+        await message.reply('頻道創建成功!')
+        voice = message.guild.voice_channels
+        for i in voice:
+          if str(tmp[2]) == str(i):
+            f = open('channelID/V_ChannelID', 'r')
+            temp = eval(f.read())
+            #print(f'長度為{len(temp)}，內容為{temp}')
+            temp.append(str(i.id))
+            f.close()
+            t = open('channelID/V_ChannelID', 'w')
+            #print(temp)
+            t.write(str(temp))
+            t.close()
+        return
+        
+      if 'vcset' == tmp[1]:
+        if message.author.guild_permissions.manage_channels or str(message.author.id) == '540134212217602050':
+          try:
+            tmp = message.content.split(" ",4)
+          except:
+            tmp = message.content.split(" ",3)
+            tmp[3] = 0
+          c = open('channelID/T_ChannelID', 'r')
+          temp = eval(c.read())
+          c.close()
+          if str(tmp[2]) in str(temp):
+            await message.reply('此頻道已登記')
+            return
+          channel = client.get_channel(int(tmp[2]))
+          #print(channel)
+          if channel != None:
+            f = open('channelID/T_ChannelID', 'w')
+            temp.append(str(tmp[2]))
+            f.write(str(temp))
+            f.close()
+            await message.reply(f'已設定{channel.name}為動態語音產生頻道')
+            return
+          else:
+            await message.reply('未找到此頻道')
+            return
+        else:
+          await message.reply('您沒有權限執行此操作')
+          return
+        
+      if 'vcdel' == tmp[1]:
+        if message.author.guild_permissions.manage_channels or str(message.author.id) == '540134212217602050':
+          try:
+            tmp = message.content.split(" ",3)
+          except:
+            await message.reply("指令錯誤...\n請輸入頻道id")
+            await message.channel.send('https://i.imgur.com/V1P5kV2.jpg')
+            return
+          c = open('channelID/T_ChannelID', 'r')
+          temp = eval(c.read())
+          c.close()
+          if str(tmp[2]) in str(temp):
+            channel = client.get_channel(int(tmp[2]))
+            #print(channel)
+            if channel != None:
+              f = open('channelID/T_ChannelID', 'w')
+              temp.remove(str(tmp[2]))
+              f.write(str(temp))
+              f.close()
+              await message.reply(f'刪除{channel.name}成功')
+              return
+            else:
+              await message.reply('未找到此頻道')
+              return
+        else:
+          await message.reply('您沒有權限執行此操作')
+          return
+
+      if 'send' == tmp[1]:
+        if str(message.author.id) == '540134212217602050':
+          tmp = message.content.split("# send ",)
+          await message.delete()
+          await message.channel.send(tmp[1])
+          return
+        else:
+          await message.reply(f'<@!540134212217602050>，<@{str(message.author.id)}>在亂玩指令')
+          return
+
+      if 'vcconfig' == tmp[1]:
+        if str(message.author.id) == '540134212217602050':
+          c = open('channelID/T_ChannelID', 'r')
+          f = open('channelID/V_ChannelID', 'r')
+          temp1 = eval(c.read())
+          temp2 = eval(f.read())
+          c.close()
+          f.close()
+          config = ""
+          for i in temp1:
+            channel = client.get_channel(int(i))
+            config = str(config) + str(channel) + '\n'
+          config = config + '以上為文字頻道\n\n'
+          for i in temp2:
+            channel = client.get_channel(int(i))
+            config =str(config) + str(channel) + '\n'
+          config = str(config) + '以上為語音頻道\n'
+          await message.reply(config)
+          return
+          
+        else:
+          await message.reply(f'<@!540134212217602050>，<@{str(message.author.id)}>在亂玩指令')
+          return
+        
+      if 'public' == tmp[1]:
+        if str(message.author.id) == '540134212217602050':
+          tmp = message.content.split("# public ",)
+          c = open('channelID/T_ChannelID', 'r')
+          temp = eval(c.read())
+          c.close()
+          progress = 0
+          for i in temp:
+            progress = progress + 1
+            channel = client.get_channel(int(i))
+            await channel.send(str(tmp[1]))
+            await message.channel.send(f"已在{channel}發送公告，進度為{progress}/{len(temp)}")
+          return
+        else:
+          await message.reply(f'<@!540134212217602050>，<@{str(message.author.id)}>在亂玩指令')
+          return
+      
+      if 'PSend' == tmp[1]:
+        if str(message.author.id) == '540134212217602050':
+          tmp = message.content.split(" ")
+          channel = client.get_channel(int(tmp[2]))
+          print(channel.name)
+          await channel.send(str(tmp[3]))
+          return
+        else:
+          await message.reply(f'<@!540134212217602050>，<@{str(message.author.id)}>在亂玩指令')
+          return
+
+      if 'check' == tmp[1]:
+        activeservers = client.guilds
+        for i in activeservers:
+          await message.channel.send(i)
+        print(activeservers)
+        return
+      
+      if 'join' == tmp[1]:
+        channel=message.author.voice.channel
+        await channel.connect()
+        return
+      
+      if 'leave' == tmp[1]:
+        await channel.voice_client.disconnect()
+        return
+
+
+      else:
+        await message.reply("指令錯誤...\n可以請您再說一次嗎?\n輸入 # help 獲得指令說明")
+        await message.channel.send('https://i.imgur.com/V1P5kV2.jpg')
+        return
+
+  if message.content == '嗨':
+    await message.reply(f'早安啊,{name}王子先生',mention_author=True)
+    return
+
+  if message.content == '早安':
+    await message.reply(f'早安啊,{name}王子先生',mention_author=True)
+    return
+
+  if '909796683418832956' in message.content:  #標記機器人
+    await message.reply(conversation.tag(name))
+    return
+  
+  if '好' in message.content:
+    keyword=['好耶','「好」','還好','我好','好誒','帶好','就好','好了沒','好長']
+    for i in keyword:
+      if i in message.content:
+        return
+    if (len(message.content) > 7 ):
+      return
+    if '你好' == message.content or '妳好' == message.content or '您好' == message.content:
+      await message.reply(f'您好啊,{name}王子先生❤️',mention_author=True)
+      return
+    await message.reply('知道就好😌', mention_author=True)
+    return
+        
+  if 'rick' in message.content:
+    await message.channel.send('有人提到rickroll嗎😀?')
+    await message.channel.send('<a:yellow_guy:910197305540481056>')
+    return
+  
+  else:
+    conv=str(message.content)
+    conv=conversation.gif(conv)
+    if conv == False:
+      return
+    else:
+      await message.channel.send(conv)
+      return
+        
+@client.event
+async def on_typing(channel, user, when):
+  #if '432188735531122700' in str(user.id):
+    #message=await channel.send('請你想好再發言')
+    #await asyncio.sleep(0.5)
+    #await message.delete()
+  return
+
+webserver.keep()
+client.run(token)
