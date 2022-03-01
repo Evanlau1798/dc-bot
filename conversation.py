@@ -2,15 +2,18 @@ import random
 from threading import Thread
 from datetime import datetime,timezone,timedelta
 
-def tag(name): #標記
+def tag(name,ctx): #標記
   conv=[
     '王子先生，王子先生\n要品茗嗎?\n茗就是茶阿!',
     '在古今中外的繪本裡阿，\n保護公主，\n就是王子先生的使命呦。',
     '早上，一睜開眼，\n首先要跟小鳥先生們，\n說聲早安呀~',
     '女孩子就是活在夢之國裡，\n做著夢的呀。\n命運的王子先生與夢之國~♪',
-    f'{name}王子先生,，有什麼事嗎？'
+    f'{name}王子先生，有什麼事嗎？'
   ]
-  return random.choice(conv)
+  if "讓我看看" in ctx:
+    return "不要!"
+  else:
+    return random.choice(conv)
 
 def conv_input(conv):
   print(conv)
@@ -39,7 +42,7 @@ def feedback(conv):
     ctx=['今晚不讓你睡喔~♥王子大人']
     return random.choice(ctx)
   if ticks == 4 :
-    ctx=['王子大人，啊……啊，不要这样♥']
+    ctx=['王子大人，啊……啊，不要這樣♥']
     return random.choice(ctx)
 
 def gif(message):

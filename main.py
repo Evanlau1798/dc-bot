@@ -1,3 +1,4 @@
+from bs4 import BeautifulSoup
 import os
 import discord
 from discord_slash import SlashCommand
@@ -17,6 +18,7 @@ from itertools import cycle
 import random
 from youtube_dl import YoutubeDL
 from dotenv import load_dotenv
+import keep_alive
 
 load_dotenv()
 players = {}
@@ -33,7 +35,7 @@ verify = False
 
 
 
-status=cycle(['新年快樂！','恭喜發財!','紅包拿來!'])
+status=cycle(['超異域公主連結☆Re:Dive'])
 @tasks.loop(seconds=5)
 async def change_status():
   await bot.change_presence(status=discord.Status.online, activity=discord.Game(next(status)))
@@ -343,6 +345,22 @@ async def stop(message):
   if not voice == None:
     voice.stop()
     await message.send('音樂已停止')
+
+
+@slash.slash(name="n",description="開車囉!", guild_ids=guild_ids)
+async def _n(message):
+  n_max=389868
+  url = "https://nhentai.net/g/" + str(random.randint(1,n_max))
+  print(url)
+  requests.get(url, headers={'Connection':'close'})
+  res=requests.post(url, headers={'Connection':'close'})
+  Soup = BeautifulSoup(res.text,'html.parser')
+  print(Soup)
+
+@slash.slash(name="roll",description="擲骰子", guild_ids=guild_ids)
+async def _roll(message):
+  await message.send(f"您擲到了{random.choice(range(0,9))}")
+
   
 
 @bot.event
@@ -432,6 +450,23 @@ async def on_message(message):
       await channel.voice_client.disconnect()
       return
 
+    if 'announcement' == tmp[1]:
+      activeservers=[]
+      guilds=bot.guilds
+      for i in guilds:
+        current_guild=bot.get_guild(i.id)
+        invite=await current_guild.invites()
+        link=activeservers.append(f"{current_guild.name}邀請自  {current_guild.owner.name}，連結如下:{invite}")
+        print(link)
+      for i in activeservers:
+        print(i,"\n")
+      return
+
+    if 'bot_leave' == tmp[1]:
+      guild=bot.get_guild(int(tmp[2]))
+      print(guild)
+      print(await guild.leave())
+
     if 'test' == tmp[1]:
       buttons = [
             manage_components.create_button(
@@ -462,32 +497,51 @@ async def on_message(message):
         button_message = await manage_components.wait_for_component(bot, components=action_row)
         await button_message.edit_origin(content=i)
         i = i + 1
+  
+    if 'CInvite' == tmp[1]:
+      if str(message.author.id) == '540134212217602050':
+        tmp = message.content.split(" ")
+        channel = bot.get_channel(int(tmp[2]))
+        link = await channel.create_invite()
+        await message.channel.send(link)
+        print(link)
+        return
+      else:
+        await message.reply(f'<@!540134212217602050>，<@{str(message.author.id)}>在亂玩指令')
+        return
+    
+    if 'addrole' == tmp[1]:
+      if str(message.author.id) == '540134212217602050':
+        tmp = message.content.split(" ")
+        temp=message.guild.get_member(message.author.id)
+        await temp.add_roles(message.guild.get_role(int(tmp[2])))
+        print(temp)
+        return
+      else:
+        await message.reply(f'<@!540134212217602050>，<@{str(message.author.id)}>在亂玩指令')
+        return
+    if 'removerole' == tmp[1]:
+      if str(message.author.id) == '540134212217602050':
+        tmp = message.content.split(" ")
+        temp=message.guild.get_member(message.author.id)
+        await temp.remove_roles(message.guild.get_role(int(tmp[2])))
+        print(temp)
+        return
+      else:
+        await message.reply(f'<@!540134212217602050>，<@{str(message.author.id)}>在亂玩指令')
+        return
     
   if message.content == '嗨':
     await message.reply(f'早安啊,{name}王子先生',mention_author=True)
     return
 
   if message.content == '早安' or message.content == '午安' or message.content == '晚安':
-    #await message.reply(f'早安啊,{name}王子先生',mention_author=True)
     await message.reply(conversation.feedback(message.content))
     return
 
   if '909796683418832956>' in message.content:  #標記機器人
-    await message.send(conversation.tag(name))
+    await message.reply(conversation.tag(name,message.content))
     return
-  
-  '''if '好' in message.content:
-    keyword=['好耶','「好」','還好','我好','好誒','帶好','就好','好了沒','好長']
-    for i in keyword:
-      if i in message.content:
-        return
-    if (len(message.content) > 7 ):
-      return
-    if '你好' == message.content or '妳好' == message.content or '您好' == message.content:
-      await message.reply(f'您好啊,{name}王子先生❤️',mention_author=True)
-      return
-    await message.reply('知道就好😌', mention_author=True)
-    return'''
         
   if 'rick' in message.content:
     await message.channel.send('有人提到rickroll嗎😀?')
@@ -518,7 +572,7 @@ async def on_voice_state_update(member, before, after):
     DV=open('channelID/DV_ChannelID','r')
     temp=eval(DV.read())
     DV.close()
-    print('使用者目前頻道:',after.channel.name)
+    print('使用者目前頻道:',after.channel.name,after.channel.id)
     if str(after.channel.id) in str(temp):
       for i in temp:
         if int(i) == int(channelID):
@@ -562,5 +616,5 @@ async def on_ready():
   change_status.start()
   print(f'目前登入身份：{bot.user}')
 
-webserver.keep()
+keep_alive.keep_alive()
 bot.run(token)
