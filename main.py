@@ -29,7 +29,7 @@ players = {}
 translator = Translator()
 bot = discord.Client(intents=discord.Intents.all())
 slash = SlashCommand(bot, sync_commands=True)
-token = 'OTA5Nzk2NjgzNDE4ODMyOTU2.YZJgMA.AlQ8-N21uVYsVwqANPvi2fYyBBk'
+token = str(subprocess.check_output('cat /home/evanlau/discord_key', shell=True)).split("'")[1]
 guild_ids = [887172437903560784]
 _REFRESH_TOKEN = 'eiDaafkFze2rPaw-X2yaOXdiGpwpNpwvrIr_1jVTQww'
 api_key = '576bfa89b78416c5bb19d6bc92f97a1e'
