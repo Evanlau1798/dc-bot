@@ -17,7 +17,7 @@ def tag(name,ctx): #標記
 
 def conv_input(conv):
   print(conv)
-  f = open('conv_log','a')
+  f = open('/home/evanlau/dc-bot/conv_log.txt','a')
   f.writelines(f"{str(conv)}\n")
   f.close()
 

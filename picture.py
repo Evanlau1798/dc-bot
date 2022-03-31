@@ -309,19 +309,22 @@ def pic_random(input_message):
     ['繪師: まぉー。-pixiv',        'https://i.imgur.com/id3cEAo.jpg'],
     ]     
     locate = 1
+    ran=random.randint(0,len(value_i)-1)
     try:
+      if ran == 0:
+        raise ValueError("just monika")
       msgback(value_i,random.randint(0,len(value_i)) - 1 )
     except:
       value_i = [
-      ['騎士...君......\nj̶̧̄u̸̬͌s̸̡̋t̴̬͘ ̴̣̀m̸̪͘ỏ̶̺n̵̙̕ȉ̷̢ǩ̷̜ã̷̠',    '繪師: Yampa-pixiv',            'https://i.imgur.com/arYgHgh.jpg'],
-      ['騎士...君......\nj̶̧̄u̸̬͌s̸̡̋t̴̬͘ ̴̣̀m̸̪͘ỏ̶̺n̵̙̕ȉ̷̢ǩ̷̜ã̷̠',    '繪師: ヒシ馬-pixiv',           'https://i.imgur.com/QHIY62W.jpg'],
-      ['騎士...君......\nj̶̧̄u̸̬͌s̸̡̋t̴̬͘ ̴̣̀m̸̪͘ỏ̶̺n̵̙̕ȉ̷̢ǩ̷̜ã̷̠',    '繪師: 麦飴 アンプ-pixiv',       'https://i.imgur.com/v8Cu6fX.jpg'],
-      ['騎士...君......\nj̶̧̄u̸̬͌s̸̡̋t̴̬͘ ̴̣̀m̸̪͘ỏ̶̺n̵̙̕ȉ̷̢ǩ̷̜ã̷̠',    '繪師: Tsunゼイ-pixiv',         'https://i.imgur.com/GeiKkKn.jpg'],
-      ['騎士...君......\nj̶̧̄u̸̬͌s̸̡̋t̴̬͘ ̴̣̀m̸̪͘ỏ̶̺n̵̙̕ȉ̷̢ǩ̷̜ã̷̠',    '繪師: Sasoura-pixiv',          'https://i.imgur.com/B9FumFa.jpg'],
-      ['騎士...君......\nj̶̧̄u̸̬͌s̸̡̋t̴̬͘ ̴̣̀m̸̪͘ỏ̶̺n̵̙̕ȉ̷̢ǩ̷̜ã̷̠',    '繪師: Heaven’s Melody-pixiv',  'https://i.imgur.com/V7QaIkI.jpg'],
-      ['騎士...君......\nj̶̧̄u̸̬͌s̸̡̋t̴̬͘ ̴̣̀m̸̪͘ỏ̶̺n̵̙̕ȉ̷̢ǩ̷̜ã̷̠',    '繪師: 麦飴 アンプ-pixiv',       'https://i.imgur.com/j8JOeW8.jpg'],
-      ['騎士...君......\nj̶̧̄u̸̬͌s̸̡̋t̴̬͘ ̴̣̀m̸̪͘ỏ̶̺n̵̙̕ȉ̷̢ǩ̷̜ã̷̠',    '繪師: Satchel-pixiv',          'https://i.imgur.com/MB0QAZv.jpg'],
-      ['騎士...君......\nj̶̧̄u̸̬͌s̸̡̋t̴̬͘ ̴̣̀m̸̪͘ỏ̶̺n̵̙̕ȉ̷̢ǩ̷̜ã̷̠',    '繪師: HOmme-pixiv',            'https://i.imgur.com/Wop3hWH.jpg']
+      ['騎士...君......\nj̶̧̄u̸̬͌s̸̡̋t̴̬͘ ̴̣̀m̸̪͘ỏ̶̺n̵̙̕ȉ̷̢ǩ̷̜ã̷̠',            'https://i.imgur.com/arYgHgh.jpg',    '繪師: Yampa-pixiv'],
+      ['騎士...君......\nj̶̧̄u̸̬͌s̸̡̋t̴̬͘ ̴̣̀m̸̪͘ỏ̶̺n̵̙̕ȉ̷̢ǩ̷̜ã̷̠',           'https://i.imgur.com/QHIY62W.jpg',    '繪師: ヒシ馬-pixiv'],
+      ['騎士...君......\nj̶̧̄u̸̬͌s̸̡̋t̴̬͘ ̴̣̀m̸̪͘ỏ̶̺n̵̙̕ȉ̷̢ǩ̷̜ã̷̠',       'https://i.imgur.com/v8Cu6fX.jpg',    '繪師: 麦飴 アンプ-pixiv'],
+      ['騎士...君......\nj̶̧̄u̸̬͌s̸̡̋t̴̬͘ ̴̣̀m̸̪͘ỏ̶̺n̵̙̕ȉ̷̢ǩ̷̜ã̷̠',         'https://i.imgur.com/GeiKkKn.jpg',    '繪師: Tsunゼイ-pixiv'],
+      ['騎士...君......\nj̶̧̄u̸̬͌s̸̡̋t̴̬͘ ̴̣̀m̸̪͘ỏ̶̺n̵̙̕ȉ̷̢ǩ̷̜ã̷̠',          'https://i.imgur.com/B9FumFa.jpg',    '繪師: Sasoura-pixiv'],
+      ['騎士...君......\nj̶̧̄u̸̬͌s̸̡̋t̴̬͘ ̴̣̀m̸̪͘ỏ̶̺n̵̙̕ȉ̷̢ǩ̷̜ã̷̠',  'https://i.imgur.com/V7QaIkI.jpg',    '繪師: Heaven’s Melody-pixiv'],
+      ['騎士...君......\nj̶̧̄u̸̬͌s̸̡̋t̴̬͘ ̴̣̀m̸̪͘ỏ̶̺n̵̙̕ȉ̷̢ǩ̷̜ã̷̠',       'https://i.imgur.com/j8JOeW8.jpg',    '繪師: 麦飴 アンプ-pixiv'],
+      ['騎士...君......\nj̶̧̄u̸̬͌s̸̡̋t̴̬͘ ̴̣̀m̸̪͘ỏ̶̺n̵̙̕ȉ̷̢ǩ̷̜ã̷̠',          'https://i.imgur.com/MB0QAZv.jpg',    '繪師: Satchel-pixiv'],
+      ['騎士...君......\nj̶̧̄u̸̬͌s̸̡̋t̴̬͘ ̴̣̀m̸̪͘ỏ̶̺n̵̙̕ȉ̷̢ǩ̷̜ã̷̠',            'https://i.imgur.com/Wop3hWH.jpg',    '繪師: HOmme-pixiv' ]
       ]     
       locate = 1
       msgback(value_i,random.randint(0,len(value_i)) - 1 )
